@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern School ERP - Complete Blueprint</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      color: #222;
+      line-height: 1.7;
+    }
+
+    header {
+      background: #1e3a8a;
+      color: white;
+      padding: 25px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin-top: 8px;
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    section {
+      background: white;
+      margin-bottom: 20px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 2px 8px rgba(0,0,0,0.08);
+    }
+
+    section h2 {
+      margin-top: 0;
+      color: #1e3a8a;
+      border-left: 5px solid #1e3a8a;
+      padding-left: 12px;
+    }
+
+    section h3 {
+      margin-top: 15px;
+      color: #0f172a;
+    }
+
+    ul {
+      padding-left: 22px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    .highlight {
+      background: #e0f2fe;
+      padding: 12px;
+      border-left: 5px solid #0284c7;
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+
+    .code-block {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 15px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-family: Consolas, monospace;
+      font-size: 14px;
+      white-space: pre;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #1e3a8a;
+      color: white;
+      margin-top: 30px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Modern School Management System (ERP)</h1>
+    <p>Complete Blueprint: ER Diagram + PostgreSQL Schema + FastAPI Backend Structure</p>
+  </header>
+
+  <div class="container">
+
+    <section>
+      <h2>1. ER Diagram (Text-Based Relationship View)</h2>
+
+      <h3>Master / Setup Tables</h3>
+      <div class="code-block">
+schools (1) ---- (M) academic_years
+schools (1) ---- (M) classes
+classes (1) ---- (M) sections
+schools (1) ---- (M) subjects
+      </div>
+
+      <h3>User & Role Tables</h3>
+      <div class="code-block">
+users (1) ---- (M) user_roles ---- (1) roles
+
+schools (1) ---- (M) users
+users (1) ---- (1) students
+users (1) ---- (1) teachers
+users (1) ---- (1) parents
+users (1) ---- (1) staff
+      </div>
+
+      <h3>Student Parent Mapping</h3>
+      <div class="code-block">
+students (M) ---- (M) parents
+via student_parent_mapping
+      </div>
+
+      <h3>Academic Mapping</h3>
+      <div class="code-block">
+students (1) ---- (M) student_class_history ---- (1) classes
+students (M) ---- (M) subjects
+via student_subject_mapping
+      </div>
+
+      <h3>Attendance</h3>
+      <div class="code-block">
+attendance_sessions (1) ---- (M) student_attendance
+students (1) ---- (M) student_attendance
+teachers (1) ---- (M) attendance_sessions
+      </div>
+
+      <h3>Fees</h3>
+      <div class="code-block">
+fee_structures (1) ---- (M) fee_items
+students (1) ---- (M) invoices
+invoices (1) ---- (M) payments
+payments (1) ---- (1) receipts_pdf_storage
+      </div>
+
+      <h3>Exams & Marks</h3>
+      <div class="code-block">
+exams (1) ---- (M) exam_schedule
+exam_schedule (1) ---- (M) marks
+students (1) ---- (M) marks
+students (1) ---- (M) report_cards
+      </div>
+
+      <h3>Homework</h3>
+      <div class="code-block">
+homework (1) ---- (M) homework_submission
+homework_submission (1) ---- (M) attachments
+      </div>
+
+      <h3>Transport</h3>
+      <div class="code-block">
+vehicles (1) ---- (M) routes
+routes (1) ---- (M) student_route_mapping
+students (1) ---- (M) student_route_mapping
+vehicles (1) ---- (M) gps_logs
+      </div>
+
+      <h3>Notification</h3>
+      <div class="code-block">
+notifications (1) ---- (M) notification_logs
+users (1) ---- (M) notification_logs
+      </div>
+
+    </section>
+
+    <section>
+      <h2>2. PostgreSQL Database Schema (CREATE TABLE Script)</h2>
+      <p><b>Save as:</b> <code>school_erp_schema.sql</code></p>
+
+      <div class="code-block">
+CREATE TABLE schools (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    address TEXT,
+    phone VARCHAR(20),
+    email VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE academic_years (
+    id SERIAL PRIMARY KEY,
+    school_id INT REFERENCES schools(id),
+    year_name VARCHAR(50) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    is_active BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE classes (
+    id SERIAL PRIMARY KEY,
+    school_id INT REFERENCES schools(id),
+    class_name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE sections (
+    id SERIAL PRIMARY KEY,
+    class_id INT REFERENCES classes(id),
+    section_name VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE subjects (
+    id SERIAL PRIMARY KEY,
+    school_id INT REFERENCES schools(id),
+    subject_name VARCHAR(100) NOT NULL
+);
+
+-- Roles & Users
+CREATE TABLE roles (
+    id SERIAL PRIMARY KEY,
+    role_name VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    school_id INT REFERENCES schools(id),
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    full_name VARCHAR(200),
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_roles (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    role_id INT REFERENCES roles(id)
+);
+
+-- Student / Parent / Teacher / Staff
+CREATE TABLE students (
+    id SERIAL PRIMARY KEY,
+    user_id INT UNIQUE REFERENCES users(id),
+    admission_no VARCHAR(50) UNIQUE NOT NULL,
+    dob DATE,
+    gender VARCHAR(10),
+    address TEXT
+);
+
+CREATE TABLE parents (
+    id SERIAL PRIMARY KEY,
+    user_id INT UNIQUE REFERENCES users(id),
+    occupation VARCHAR(100)
+);
+
+CREATE TABLE teachers (
+    id SERIAL PRIMARY KEY,
+    user_id INT UNIQUE REFERENCES users(id),
+    qualification VARCHAR(200),
+    experience_years INT DEFAULT 0
+);
+
+CREATE TABLE staff (
+    id SERIAL PRIMARY KEY,
+    user_id INT UNIQUE REFERENCES users(id),
+    department VARCHAR(100)
+);
+
+-- Parent-Student Mapping
+CREATE TABLE student_parent_mapping (
+    id SERIAL PRIMARY KEY,
+    student_id INT REFERENCES students(id),
+    parent_id INT REFERENCES parents(id),
+    relation VARCHAR(50)
+);
+
+-- Student Academic History
+CREATE TABLE student_class_history (
+    id SERIAL PRIMARY KEY,
+    student_id INT REFERENCES students(id),
+    class_id INT REFERENCES classes(id),
+    section_id INT REFERENCES sections(id),
+    academic_year_id INT REFERENCES academic_years(id),
+    start_date DATE DEFAULT CURRENT_DATE,
+    end_date DATE
+);
+
+-- Student Subject Mapping
+CREATE TABLE student_subject_mapping (
+    id SERIAL PRIMARY KEY,
+    student_id INT REFERENCES students(id),
+    subject_id INT REFERENCES subjects(id)
+);
+
+-- Attendance
+CREATE TABLE attendance_sessions (
+    id SERIAL PRIMARY KEY,
+    class_id INT REFERENCES classes(id),
+    section_id INT REFERENCES sections(id),
+    teacher_id INT REFERENCES teachers(id),
+    attendance_date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE student_attendance (
+    id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES attendance_sessions(id),
+    student_id INT REFERENCES students(id),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('Present','Absent','Late','Half-Day'))
+);
+
+-- Fees
+CREATE TABLE fee_structures (
+    id SERIAL PRIMARY KEY,
+    school_id INT REFERENCES schools(id),
+    class_id INT REFERENCES classes(id),
+    academic_year_id INT REFERENCES academic_years(id),
+    structure_name VARCHAR(100)
+);
+
+CREATE TABLE fee_items (
+    id SERIAL PRIMARY KEY,
+    fee_structure_id INT REFERENCES fee_structures(id),
+    item_name VARCHAR(100),
+    amount NUMERIC(10,2) NOT NULL
+);
+
+CREATE TABLE invoices (
+    id SERIAL PRIMARY KEY,
+    student_id INT REFERENCES students(id),
+    academic_year_id INT REFERENCES academic_years(id),
+    total_amount NUMERIC(10,2) NOT NULL,
+    due_amount NUMERIC(10,2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE payments (
+    id SERIAL PRIMARY KEY,
+    invoice_id INT REFERENCES invoices(id),
+    paid_amount NUMERIC(10,2) NOT NULL,
+    payment_mode VARCHAR(50),
+    transaction_id VARCHAR(200),
+    paid_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE receipts_pdf_storage (
+    id SERIAL PRIMARY KEY,
+    payment_id INT REFERENCES payments(id),
+    file_path TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Exams
+CREATE TABLE exams (
+    id SERIAL PRIMARY KEY,
+    school_id INT REFERENCES schools(id),
+    academic_year_id INT REFERENCES academic_years(id),
+    exam_name VARCHAR(100),
+    start_date DATE,
+    end_date DATE
+);
+
+CREATE TABLE exam_schedule (
+    id SERIAL PRIMARY KEY,
+    exam_id INT REFERENCES exams(id),
+    subject_id INT REFERENCES subjects(id),
+    exam_date DATE,
+    max_marks INT DEFAULT 100
+);
+
+CREATE TABLE marks (
+    id SERIAL PRIMARY KEY,
+    schedule_id INT REFERENCES exam_schedule(id),
+    student_id INT REFERENCES students(id),
+    marks_obtained NUMERIC(5,2)
+);
+
+CREATE TABLE report_cards (
+    id SERIAL PRIMARY KEY,
+    student_id INT REFERENCES students(id),
+    exam_id INT REFERENCES exams(id),
+    total_marks NUMERIC(10,2),
+    grade VARCHAR(10),
+    generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Homework
+CREATE TABLE homework (
+    id SERIAL PRIMARY KEY,
+    teacher_id INT REFERENCES teachers(id),
+    class_id INT REFERENCES classes(id),
+    section_id INT REFERENCES sections(id),
+    subject_id INT REFERENCES subjects(id),
+    title VARCHAR(200),
+    description TEXT,
+    due_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE homework_submission (
+    id SERIAL PRIMARY KEY,
+    homework_id INT REFERENCES homework(id),
+    student_id INT REFERENCES students(id),
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    remarks TEXT
+);
+
+CREATE TABLE attachments (
+    id SERIAL PRIMARY KEY,
+    submission_id INT REFERENCES homework_submission(id),
+    file_path TEXT NOT NULL
+);
+
+-- Transport
+CREATE TABLE vehicles (
+    id SERIAL PRIMARY KEY,
+    school_id INT REFERENCES schools(id),
+    vehicle_no VARCHAR(50),
+    driver_name VARCHAR(100),
+    driver_phone VARCHAR(20)
+);
+
+CREATE TABLE routes (
+    id SERIAL PRIMARY KEY,
+    vehicle_id INT REFERENCES vehicles(id),
+    route_name VARCHAR(100)
+);
+
+CREATE TABLE student_route_mapping (
+    id SERIAL PRIMARY KEY,
+    student_id INT REFERENCES students(id),
+    route_id INT REFERENCES routes(id)
+);
+
+CREATE TABLE gps_logs (
+    id SERIAL PRIMARY KEY,
+    vehicle_id INT REFERENCES vehicles(id),
+    latitude NUMERIC(10,6),
+    longitude NUMERIC(10,6),
+    logged_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Notifications
+CREATE TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(200),
+    message TEXT,
+    channel VARCHAR(20) CHECK (channel IN ('SMS','Email','WhatsApp','Push')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE notification_logs (
+    id SERIAL PRIMARY KEY,
+    notification_id INT REFERENCES notifications(id),
+    user_id INT REFERENCES users(id),
+    status VARCHAR(20) DEFAULT 'Sent',
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+      </div>
+    </section>
+
+    <section>
+      <h2>3. FastAPI Backend Folder Structure (Production Ready)</h2>
+
+      <div class="code-block">
+school-erp-backend/
+│
+├── app/
+│   ├── main.py
+│   ├── core/
+│   │   ├── config.py
+│   │   ├── security.py
+│   │   ├── database.py
+│   │   └── logger.py
+│   │
+│   ├── models/
+│   │   ├── user.py
+│   │   ├── student.py
+│   │   ├── attendance.py
+│   │   ├── fees.py
+│   │   ├── exams.py
+│   │   ├── homework.py
+│   │   ├── transport.py
+│   │   └── notification.py
+│   │
+│   ├── schemas/
+│   │   ├── user_schema.py
+│   │   ├── student_schema.py
+│   │   ├── attendance_schema.py
+│   │   ├── fees_schema.py
+│   │   ├── exams_schema.py
+│   │   ├── homework_schema.py
+│   │   └── transport_schema.py
+│   │
+│   ├── routers/
+│   │   ├── auth_router.py
+│   │   ├── student_router.py
+│   │   ├── attendance_router.py
+│   │   ├── fees_router.py
+│   │   ├── exams_router.py
+│   │   ├── homework_router.py
+│   │   ├── transport_router.py
+│   │   └── notification_router.py
+│   │
+│   ├── services/
+│   │   ├── auth_service.py
+│   │   ├── student_service.py
+│   │   ├── attendance_service.py
+│   │   ├── fees_service.py
+│   │   ├── exams_service.py
+│   │   ├── homework_service.py
+│   │   └── transport_service.py
+│   │
+│   ├── utils/
+│   │   ├── pdf_generator.py
+│   │   ├── email_sender.py
+│   │   ├── sms_sender.py
+│   │   └── whatsapp_sender.py
+│   │
+│   └── tests/
+│       ├── test_auth.py
+│       ├── test_students.py
+│       └── test_fees.py
+│
+├── requirements.txt
+├── Dockerfile
+└── README.md
+      </div>
+
+      <h3>Example main.py</h3>
+      <div class="code-block">
+from fastapi import FastAPI
+from app.routers import auth_router, student_router, attendance_router
+
+app = FastAPI(title="School ERP API", version="1.0.0")
+
+app.include_router(auth_router.router, prefix="/auth", tags=["Auth"])
+app.include_router(student_router.router, prefix="/students", tags=["Students"])
+app.include_router(attendance_router.router, prefix="/attendance", tags=["Attendance"])
+
+@app.get("/")
+def root():
+    return {"message": "School ERP Backend is running"}
+      </div>
+
+      <h3>Example Student Router</h3>
+      <div class="code-block">
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.get("/")
+def get_students():
+    return {"students": []}
+
+@router.post("/")
+def create_student():
+    return {"message": "Student created successfully"}
+      </div>
+
+      <h3>Example Auth Router</h3>
+      <div class="code-block">
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.post("/login")
+def login():
+    return {"token": "jwt-token-here"}
+      </div>
+
+      <div class="highlight">
+        <b>SaaS Multi-School Ready Tip:</b> Add school_id in every table and filter all queries using JWT school_id.
+      </div>
+
+    </section>
+
+  </div>
+
+  <footer>
+    <p>Modern School ERP Blueprint | Cloud + SaaS + AI Ready</p>
+  </footer>
+
+</body>
+</html>

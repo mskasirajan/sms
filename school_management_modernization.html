@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modern School Management System - Architecture Document</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: #222;
+        }
+
+        header {
+            background: #1e3a8a;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        header p {
+            margin-top: 8px;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        section {
+            background: white;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 2px 8px rgba(0,0,0,0.08);
+        }
+
+        section h2 {
+            margin-top: 0;
+            color: #1e3a8a;
+            border-left: 5px solid #1e3a8a;
+            padding-left: 10px;
+        }
+
+        ul {
+            padding-left: 22px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .highlight {
+            background: #e0f2fe;
+            padding: 12px;
+            border-left: 5px solid #0284c7;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .code-block {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 14px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #1e3a8a;
+            color: white;
+            margin-top: 30px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Modern School Management System (ERP)</h1>
+        <p>Architecture + Modules + Database Design Blueprint</p>
+    </header>
+
+    <div class="container">
+
+        <section>
+            <h2>1. High Level Architecture</h2>
+            <ul>
+                <li><b>Frontend:</b> Admin Portal, Teacher Portal, Parent & Student Mobile App</li>
+                <li><b>Backend:</b> API Gateway + Microservices</li>
+                <li><b>Database:</b> PostgreSQL + Redis (optional)</li>
+                <li><b>Storage:</b> AWS S3 / Azure Blob for documents</li>
+            </ul>
+
+            <div class="highlight">
+                <b>Goal:</b> Cloud-based, Mobile-first, Secure, and Scalable ERP system.
+            </div>
+        </section>
+
+        <section>
+            <h2>2. Recommended Technology Stack</h2>
+            <ul>
+                <li><b>Frontend Web:</b> React / Next.js</li>
+                <li><b>Mobile:</b> React Native / Flutter</li>
+                <li><b>Backend:</b> FastAPI (Python) OR .NET Core</li>
+                <li><b>Database:</b> PostgreSQL</li>
+                <li><b>Cache:</b> Redis (optional)</li>
+                <li><b>Hosting:</b> AWS / Azure</li>
+                <li><b>Notifications:</b> SMS, Email, WhatsApp Business API, Firebase Push</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Modules (Microservice / Modular Design)</h2>
+
+            <h3>A. Core School Management</h3>
+            <ul>
+                <li>Student Management</li>
+                <li>Staff & Teacher Management</li>
+                <li>Academic Year Setup</li>
+                <li>Class / Section / Subject Setup</li>
+            </ul>
+
+            <h3>B. Operations</h3>
+            <ul>
+                <li>Attendance (Students + Staff)</li>
+                <li>Timetable Management</li>
+                <li>Homework + Assignments</li>
+                <li>Exam + Marks + Report Card</li>
+            </ul>
+
+            <h3>C. Finance</h3>
+            <ul>
+                <li>Fees Management</li>
+                <li>Payment Gateway Integration</li>
+                <li>Auto Invoice + Receipt Generation</li>
+                <li>Accounting Reports</li>
+            </ul>
+
+            <h3>D. Extra Facilities</h3>
+            <ul>
+                <li>Transport + GPS Tracking</li>
+                <li>Library Management</li>
+                <li>Hostel Management</li>
+                <li>Inventory Management (Books, Uniform, Lab Items)</li>
+            </ul>
+
+            <h3>E. Communication</h3>
+            <ul>
+                <li>Announcements + Circulars</li>
+                <li>Parent Notifications</li>
+                <li>Support Ticket System</li>
+            </ul>
+
+            <h3>F. Analytics</h3>
+            <ul>
+                <li>Dashboard + Reports</li>
+                <li>AI Insights (Performance Trends, Risk Students)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Role Based Access Control (RBAC)</h2>
+            <ul>
+                <li>Super Admin</li>
+                <li>School Admin</li>
+                <li>Principal</li>
+                <li>Teacher</li>
+                <li>Accountant</li>
+                <li>Librarian</li>
+                <li>Transport Manager</li>
+                <li>Student</li>
+                <li>Parent</li>
+            </ul>
+
+            <div class="highlight">
+                <b>Security Requirement:</b> Each role must have controlled access to view/edit/approve/download data.
+            </div>
+        </section>
+
+        <section>
+            <h2>5. Database Schema (Core Tables)</h2>
+
+            <h3>Master Tables</h3>
+            <ul>
+                <li>schools</li>
+                <li>academic_years</li>
+                <li>classes</li>
+                <li>sections</li>
+                <li>subjects</li>
+            </ul>
+
+            <h3>User & Login Tables</h3>
+            <ul>
+                <li>users</li>
+                <li>roles</li>
+                <li>user_roles</li>
+                <li>parents</li>
+                <li>students</li>
+                <li>teachers</li>
+                <li>staff</li>
+                <li>student_parent_mapping</li>
+            </ul>
+
+            <h3>Student Academic Mapping</h3>
+            <ul>
+                <li>student_class_history</li>
+                <li>student_subject_mapping</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Attendance Module Schema</h2>
+            <ul>
+                <li><b>attendance_sessions</b> (date, class_id, section_id, teacher_id)</li>
+                <li><b>student_attendance</b> (session_id, student_id, status)</li>
+            </ul>
+
+            <div class="highlight">
+                <b>Attendance Status:</b> Present, Absent, Late, Half-Day
+            </div>
+        </section>
+
+        <section>
+            <h2>7. Fees & Payment Module Schema</h2>
+            <ul>
+                <li>fee_structures</li>
+                <li>fee_items (tuition, transport, exam fee)</li>
+                <li>student_fee_mapping</li>
+                <li>invoices</li>
+                <li>payments</li>
+                <li>receipt_pdf_storage</li>
+            </ul>
+
+            <div class="highlight">
+                Supports partial payment, pending due tracking, late fine rules, and auto reminders.
+            </div>
+        </section>
+
+        <section>
+            <h2>8. Exams & Report Card Schema</h2>
+            <ul>
+                <li>exams (Quarterly, Half-Yearly, Annual)</li>
+                <li>exam_schedule</li>
+                <li>marks</li>
+                <li>report_cards</li>
+            </ul>
+
+            <div class="highlight">
+                Report card generation should be automated into PDF format.
+            </div>
+        </section>
+
+        <section>
+            <h2>9. Homework / Assignment Schema</h2>
+            <ul>
+                <li>homework</li>
+                <li>homework_submission</li>
+                <li>attachments (S3/Blob storage path)</li>
+            </ul>
+
+            <div class="highlight">
+                Supports photo/pdf upload, submission tracking, and teacher feedback.
+            </div>
+        </section>
+
+        <section>
+            <h2>10. Notification System Design</h2>
+            <ul>
+                <li>notifications</li>
+                <li>notification_logs</li>
+            </ul>
+
+            <p>Notification channels supported:</p>
+            <ul>
+                <li>SMS</li>
+                <li>Email</li>
+                <li>WhatsApp Business API</li>
+                <li>Firebase Push Notification</li>
+            </ul>
+
+            <div class="highlight">
+                <b>Triggers:</b> Absent alert, Fee due reminder, Homework posted, Exam schedule, Circular updates.
+            </div>
+        </section>
+
+        <section>
+            <h2>11. Transport Module Schema</h2>
+            <ul>
+                <li>vehicles</li>
+                <li>drivers</li>
+                <li>routes</li>
+                <li>student_route_mapping</li>
+                <li>gps_logs</li>
+            </ul>
+
+            <div class="highlight">
+                Features include live tracking, pickup/drop alerts, and route optimization.
+            </div>
+        </section>
+
+        <section>
+            <h2>12. API Design (Sample Endpoints)</h2>
+
+            <div class="code-block">
+POST /auth/login <br/>
+POST /auth/refresh <br/>
+POST /auth/logout <br/><br/>
+
+GET  /students <br/>
+POST /students <br/>
+PUT  /students/{id} <br/>
+GET  /students/{id}/profile <br/><br/>
+
+POST /attendance/session <br/>
+POST /attendance/mark <br/>
+GET  /attendance/report <br/><br/>
+
+POST /fees/invoice/create <br/>
+POST /fees/payment <br/>
+GET  /fees/student/{id}/status <br/><br/>
+
+POST /exams/create <br/>
+POST /exams/marks/upload <br/>
+GET  /exams/reportcard/{studentId}
+            </div>
+        </section>
+
+        <section>
+            <h2>13. Security Features (Must Have)</h2>
+            <ul>
+                <li>JWT Authentication</li>
+                <li>Refresh Token Support</li>
+                <li>Password Hashing (bcrypt)</li>
+                <li>OTP Login option for Parents</li>
+                <li>Audit Logs for Admin Actions</li>
+                <li>Encryption for sensitive data</li>
+                <li>Backup & Restore Strategy</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>14. AI Features (Advanced Modernisation)</h2>
+            <ul>
+                <li>Student performance prediction</li>
+                <li>Attendance drop alerts</li>
+                <li>Slow learner identification</li>
+                <li>Fee defaulter trend analysis</li>
+                <li>Teacher workload analytics</li>
+                <li>Parent engagement score</li>
+            </ul>
+
+            <div class="highlight">
+                AI makes the ERP proactive instead of reactive.
+            </div>
+        </section>
+
+        <section>
+            <h2>15. Deployment Architecture (Production Ready)</h2>
+            <ul>
+                <li>Frontend: Hosted in S3 + CloudFront (or Azure Static Web Apps)</li>
+                <li>Backend: Docker + Kubernetes</li>
+                <li>Database: Managed PostgreSQL (RDS / Azure Database)</li>
+                <li>Storage: S3 / Azure Blob</li>
+                <li>CI/CD: Azure DevOps / GitHub Actions</li>
+            </ul>
+
+            <div class="highlight">
+                Design the system as <b>SaaS-ready</b> so multiple schools can use the same platform.
+            </div>
+        </section>
+
+        <section>
+            <h2>16. Recommended Roadmap (Implementation Plan)</h2>
+
+            <h3>Phase 1 (MVP)</h3>
+            <ul>
+                <li>Student database</li>
+                <li>Attendance</li>
+                <li>Fees</li>
+                <li>Parent notifications</li>
+            </ul>
+
+            <h3>Phase 2</h3>
+            <ul>
+                <li>Exams + Report cards</li>
+                <li>Homework + assignments</li>
+                <li>Teacher portal</li>
+            </ul>
+
+            <h3>Phase 3</h3>
+            <ul>
+                <li>Transport tracking</li>
+                <li>Library + hostel</li>
+                <li>Inventory</li>
+            </ul>
+
+            <h3>Phase 4</h3>
+            <ul>
+                <li>RFID/Face attendance automation</li>
+                <li>AI dashboards</li>
+                <li>Predictive analytics</li>
+            </ul>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>Modern School Management System Blueprint | Designed for Cloud, SaaS & AI Powered ERP</p>
+    </footer>
+
+</body>
+</html>
