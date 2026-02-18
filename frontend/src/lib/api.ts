@@ -52,7 +52,11 @@ api.interceptors.response.use(
 
 export function getErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
-    return error.response?.data?.detail || error.message;
+    const detail = error.response?.data?.detail;
+    if (Array.isArray(detail)) {
+      return detail.map((d: { msg: string }) => d.msg).join(', ');
+    }
+    return detail || error.message;
   }
   if (error instanceof Error) return error.message;
   return 'An unexpected error occurred';

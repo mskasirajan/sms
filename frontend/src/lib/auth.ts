@@ -5,12 +5,9 @@ import type { AuthTokens, AuthUser, LoginCredentials } from '@/types';
 const COOKIE_OPTS = { secure: true, sameSite: 'strict' as const };
 
 export async function login(credentials: LoginCredentials): Promise<AuthUser> {
-  const form = new URLSearchParams();
-  form.append('username', credentials.username);
-  form.append('password', credentials.password);
-
-  const { data } = await api.post<AuthTokens>('/auth/login', form, {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  const { data } = await api.post<AuthTokens>('/auth/login', {
+    email: credentials.email,
+    password: credentials.password,
   });
 
   Cookies.set('access_token', data.access_token, COOKIE_OPTS);

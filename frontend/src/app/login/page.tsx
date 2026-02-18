@@ -47,11 +47,11 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Input
-            label="Username or Email"
-            type="text"
+            label="Email"
+            type="email"
             placeholder="admin@school.com"
-            error={errors.username?.message}
-            {...register('username', { required: 'Username is required' })}
+            error={errors.email?.message}
+            {...register('email', { required: 'Email is required' })}
           />
           <Input
             label="Password"
