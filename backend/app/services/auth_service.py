@@ -46,6 +46,7 @@ def create_user(db: Session, school_id: int, payload: UserCreate) -> User:
         school_id=school_id,
         email=payload.email,
         hashed_password=hash_password(payload.password),
+        full_name=payload.full_name,
         phone=payload.phone,
     )
     if payload.role_names:

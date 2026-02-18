@@ -21,6 +21,7 @@ class UserCreate(BaseModel):
     school_id: int
     email: EmailStr
     password: str
+    full_name: Optional[str] = None
     phone: Optional[str] = None
     role_names: List[str] = []
 
@@ -29,8 +30,10 @@ class UserResponse(BaseModel):
     id: int
     school_id: int
     email: str
-    phone: Optional[str]
+    full_name: Optional[str] = None
+    phone: Optional[str] = None
     is_active: bool
+    role: Optional[str] = None
     roles: List[str] = []
 
     model_config = {"from_attributes": True}

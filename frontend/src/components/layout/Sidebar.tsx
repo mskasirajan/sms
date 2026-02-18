@@ -77,11 +77,11 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
       <div className="px-4 py-4 border-t border-gray-800">
         <div className="flex items-center gap-3 mb-3">
           <div className="h-8 w-8 rounded-full bg-primary-600 flex items-center justify-center text-white text-sm font-semibold">
-            {user.full_name.charAt(0).toUpperCase()}
+            {(user.full_name ?? user.email ?? '?').charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-medium text-white truncate">{user.full_name}</p>
-            <p className="text-xs text-gray-400 capitalize">{user.role.replace('_', ' ')}</p>
+            <p className="text-sm font-medium text-white truncate">{user.full_name ?? user.email}</p>
+            <p className="text-xs text-gray-400 capitalize">{(user.role ?? '').replace(/_/g, ' ')}</p>
           </div>
         </div>
         <button

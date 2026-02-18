@@ -9,6 +9,26 @@ from app.models.user import User
 router = APIRouter()
 
 
+def _normalize_role(name: str) -> str:
+    """Convert role display name to snake_case token (e.g. 'School Admin' → 'school_admin')."""
+    return name.lower().replace(' ', '_')
+
+
+def _user_response(user: User) -> UserResponse:
+    role_names = [r.name for r in user.roles]
+    normalized = [_normalize_role(r) for r in role_names]
+    return UserResponse(
+        id=user.id,
+        school_id=user.school_id,
+        email=user.email,
+        full_name=user.full_name,
+        phone=user.phone,
+        is_active=user.is_active,
+        role=normalized[0] if normalized else None,
+        roles=normalized,
+    )
+
+
 @router.post("/login", response_model=TokenResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
     return auth_service.login(db, payload)
@@ -26,14 +46,7 @@ def create_user(
     current_user: User = Depends(get_current_user),
 ):
     user = auth_service.create_user(db, current_user.school_id, payload)
-    return UserResponse(
-        id=user.id,
-        school_id=user.school_id,
-        email=user.email,
-        phone=user.phone,
-        is_active=user.is_active,
-        roles=[r.name for r in user.roles],
-    )
+    return _user_response(user)
 
 
 @router.post("/change-password", status_code=204)
@@ -47,11 +60,4 @@ def change_password(
 
 @router.get("/me", response_model=UserResponse)
 def me(current_user: User = Depends(get_current_user)):
-    return UserResponse(
-        id=current_user.id,
-        school_id=current_user.school_id,
-        email=current_user.email,
-        phone=current_user.phone,
-        is_active=current_user.is_active,
-        roles=[r.name for r in current_user.roles],
-    )
+    return _user_response(current_user)

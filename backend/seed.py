@@ -56,6 +56,7 @@ def seed():
             school_id=school.id,
             email=ADMIN_EMAIL,
             hashed_password=hash_password(ADMIN_PASSWORD),
+            full_name="School Administrator",
             is_active=True,
             is_verified=True,
         )
