@@ -44,3 +44,26 @@ pip install -r requirements.txt
 alembic upgrade head
 uvicorn app.main:app --reload
 ```
+
+postgres-# CREATE DATABASE sms_db;
+ERROR:  syntax error at or near "CREATE"
+LINE 2: CREATE DATABASE sms_db;
+        ^
+postgres=# CREATE DATABAE sms_db;
+ERROR:  syntax error at or near "DATABAE"
+LINE 1: CREATE DATABAE sms_db;
+               ^
+postgres=# CREATE DATABASE sms_db;
+CREATE DATABASE
+postgres=# CREATE ROLE mani WITH LOGIN PASSWORD 'mani123';
+CREATE ROLE
+postgres=# \q
+Manikandans-MacBook-Pro:~ mani$ psql -U mani -d employee_db
+psql: error: connection to server on socket "/tmp/.s.PGSQL.5432" failed: FATAL:  database "employee_db" does not exist
+Manikandans-MacBook-Pro:~ mani$ psql -U mani -d sms_db
+psql (14.11 (Homebrew), server 16.11 (Postgres.app))
+WARNING: psql major version 14, server major version 16.
+         Some psql features might not work.
+Type "help" for help.
+
+sms_db=> 
